@@ -1,0 +1,7 @@
+name: AIOMotd 
+main: cn.mcplugin.aiomotd.plugin.Main 
+version: 1.0.0 
+commands: 
+   aim: 
+     description: Reload AIOMotd 
+     usage: /aim 
