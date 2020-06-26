@@ -63,7 +63,7 @@ public class AIMPluginUtils {
 	/**
 	 * 发送数据，规定协议：开头一行：UUID|SID   1.在线玩家数据，2.地图数据，3.服务器信息数据
 	 * */
-	public static void sendJsonToAIMServer(String type,Object context,boolean infoSwitch) {
+	public static void sendJsonToAIMServer(String type,Object context,Class<?> clazz,boolean infoSwitch) {
 		Socket s = null;
 		int sid = Main.sid;
 		String uuid = Main.uuid;
@@ -94,7 +94,9 @@ public class AIMPluginUtils {
 			StringBuilder sb = new StringBuilder();
 			sb.append("#"+type+"#"+"\n");//发送消息的类型
 			sb.append(uuid+"@"+sid+"\n");//SID 和 UUID
-			sb.append(new Gson().toJson(context));//把内容转换为JSON
+			String json = new Gson().toJson(context,clazz);
+			sb.append(json);//把内容转换为JSON
+			System.out.println("json"+json);
 			dos.writeBytes(curlInfo+(sb.toString().getBytes().length)+"\r\n"+"\r\n"+sb.toString());
 			dos.writeBytes("!");
 			dos.flush();//数据发送成功
@@ -132,7 +134,7 @@ public class AIMPluginUtils {
 	}
 	
 	public static void main(String[] args) throws UnknownHostException, IOException {
-		AIMPluginUtils.sendJsonToAIMServer("player_info","{uuid:\"ASDFWEFDASFAS-2WQ3EDF\",name:\"VioletTec\"}",true);//发送数据
+		AIMPluginUtils.sendJsonToAIMServer("player_info","{uuid:\"ASDFWEFDASFAS-2WQ3EDF\",name:\"VioletTec\"}",PlayerData.class,true);//发送数据
 
 		
 	}
