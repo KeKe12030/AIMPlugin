@@ -1,0 +1,8 @@
+name: ExamplePlugin 
+main: cn.mcplugin.aiomotd.plugin.Main 
+version: 1.0.0 
+commands: 
+   aim: 
+     description: aim 
+     usage: /aim 
+depend: [Vault] 

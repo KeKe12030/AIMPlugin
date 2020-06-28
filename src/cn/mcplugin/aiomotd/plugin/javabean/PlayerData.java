@@ -11,7 +11,7 @@ public class PlayerData {
 	public class Player{
 		public String uuid;
 		public String playerName;
-		public int money;
+		public double money;
 	}
 	public PlayerData() {}
 	/**

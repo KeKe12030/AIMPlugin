@@ -8,7 +8,7 @@ import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 
 public class VaultEconomyUtils implements EconomyUtils{
-	public static Economy economy = null;
+	public Economy economy = null;
 	@Override
 	public boolean hasAccount(OfflinePlayer player) {
 		return economy.hasAccount(player);
@@ -22,4 +22,10 @@ public class VaultEconomyUtils implements EconomyUtils{
 		return economy.getBalance(player);
 	}
 	
+	/**
+	 * 留个空构造器，方便反射
+	 * */
+	public VaultEconomyUtils(Economy economy) {
+		this.economy = economy;
+	}
 }

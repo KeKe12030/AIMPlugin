@@ -9,14 +9,17 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.Vector;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.libs.com.google.gson.Gson;
 import org.bukkit.entity.Player;
+
+import com.google.gson.Gson;
 
 import cn.mcplugin.aiomotd.plugin.javabean.PlayerData;
 import cn.mcplugin.aiomotd.plugin.javabean.ServerInfoData;
@@ -31,12 +34,19 @@ public class AIMPluginUtils {
 	public static PlayerData getOnlinePlayers(){//获取在线玩家名
 		PlayerData pd = new PlayerData();
 		Vector<cn.mcplugin.aiomotd.plugin.javabean.PlayerData.Player> v = new Vector<cn.mcplugin.aiomotd.plugin.javabean.PlayerData.Player>();
-		Player[]  playersArray = Bukkit.getServer().getOnlinePlayers();
+		Collection<? extends Player> playersArray = Bukkit.getServer().getOnlinePlayers();
+		Iterator it = playersArray.iterator();
 		cn.mcplugin.aiomotd.plugin.javabean.PlayerData.Player p = null;
-		for(int i=0;i< playersArray.length;i++) {
+		while(it.hasNext()) {
+			Player player = (Player) it.next();
 			p = pd.new Player();//存入Player
-			p.uuid = playersArray[i].getUniqueId().toString();
-			p.playerName = playersArray[i].getName();
+			p.uuid = player.getUniqueId().toString();
+			p.playerName = player.getName();
+			System.out.println("EconomyUtils的值："+Main.economyUtils);
+			if(Main.economyUtils!=null) {
+				AIMPluginUtils.print("economyUtils不是空！");
+				p.money = Main.economyUtils.getMoney(player);
+			}
 			v.add(p);//获取玩家名
 		}
 		pd.setPlayer(v);
@@ -70,10 +80,10 @@ public class AIMPluginUtils {
 		DataOutputStream dos = null;
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		try {
-			s = new Socket("58.218.200.204",40000);
-//			s = new Socket("127.0.0.1",50000);
+			s = new Socket("transfer.aim.mcplugin.cn",50000);
+			//			s = new Socket("127.0.0.1",50000);
 			if(infoSwitch) {//控制是否启动接收线程
-//			//启动接收线程
+				//			//启动接收线程
 				ReceiveInfoThread rit = new ReceiveInfoThread(s);
 				Thread t = new Thread(rit);
 				t.start();
@@ -94,6 +104,7 @@ public class AIMPluginUtils {
 			StringBuilder sb = new StringBuilder();
 			sb.append("#"+type+"#"+"\n");//发送消息的类型
 			sb.append(uuid+"@"+sid+"\n");//SID 和 UUID
+			AIMPluginUtils.print("UID and SSID:"+uuid+" "+sid);
 			String json = new Gson().toJson(context,clazz);
 			sb.append(json);//把内容转换为JSON
 			System.out.println("json"+json);
@@ -105,14 +116,14 @@ public class AIMPluginUtils {
 				AIMPluginUtils.print("AIM官方服务器宕机，请联系QQ:3352772828修复！");
 			}
 		}
-		
+
 	}
 	public static String[] getInfoFromAIMServer(InputStream is) throws IOException {
-			DataInputStream br = new DataInputStream(is);
-			String head = br.readUTF();//第一个UTF是报头
-			String context = br.readUTF();//第二个readUTF是内容提
-			int start = context.indexOf("text:")+"text:".getBytes().length;
-			return context.substring(start).split("\r\n");
+		DataInputStream br = new DataInputStream(is);
+		String head = br.readUTF();//第一个UTF是报头
+		String context = br.readUTF();//第二个readUTF是内容提
+		int start = context.indexOf("text:")+"text:".getBytes().length;
+		return context.substring(start).split("\r\n");
 
 	}
 	public static void print(String msg) {
@@ -132,10 +143,10 @@ public class AIMPluginUtils {
 			}
 		}
 	}
-	
+
 	public static void main(String[] args) throws UnknownHostException, IOException {
 		AIMPluginUtils.sendJsonToAIMServer("player_info","{uuid:\"ASDFWEFDASFAS-2WQ3EDF\",name:\"VioletTec\"}",PlayerData.class,true);//发送数据
 
-		
+
 	}
 }
